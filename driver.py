@@ -10,6 +10,8 @@ stop_threads = False
 nodes = {}
 unverifiedTxs = {}
 
+# driver takes transactions and number of nodes to process them
+
 
 def driver(txs, numNodes):
     startNodes(numNodes)
