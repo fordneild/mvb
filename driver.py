@@ -146,7 +146,7 @@ class Chain():
 
         def validate(blocks, genesisBlock):
             try:
-                if(hash(blocks[0]) != hash(genesisBlock)):
+                if(blocks[0].hash() != genesisBlock.hash()):
                     return False
                 # we have the same genesis
                 for block in blocks[1:]:
