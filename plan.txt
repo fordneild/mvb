@@ -1,0 +1,2 @@
+1. Build a driver that starts 8 nodes and has the print hello world
+2. Have each of them print the value of thier index in some global array
