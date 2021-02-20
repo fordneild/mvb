@@ -1,6 +1,6 @@
 import threading
 import hashlib
-# from pynacl.signing import SigningKey
+import pynacl
 import time
 import queue
 import json
@@ -18,6 +18,11 @@ txInLongestChain = set()
 
 # driver takes transactions and number of nodes to process them
 
+
+
+# TODO validate other nodes incoming new chain (forking)
+# TODO generate examples
+# TODO signing blocks and verifing signatures in TX
 
 def driver(txs, numNodes):
     startNodes(numNodes)
@@ -90,17 +95,16 @@ class Block():
         self.nonce = self.generateNonce()
         self.pow = self.generatePow()
 
-    def generateNonce(self):
-        # A nonce is an abbreviation for "number only used once," which is a number added to a hashed—or encrypted—block in a blockchain that, when rehashed, meets the difficulty level restrictions
-        return 'nonce'
+    def generate_nonce(length=64):
+        """Generate pseudorandom number."""
+        return ''.join([str(random.randint(0, 9)) for i in range(length)])
+    
 
     def generatePow(self):
-        #  "pow": <the proof-of-work, a hash of the tx, prev, and nonce fields>
-        return 'pow'
+        return generate_hash([self.tx, self.prev, self.nonce])
 
     def hash(self):
         return generate_hash(self)
-        # return generate_hash([self.tx, self.prev, self.nonce, self.pow])
 
 
 class Chain():
@@ -147,6 +151,11 @@ class Chain():
                 # we have the same genesis
                 for block in blocks[1:]:
                     if(block.pow < 0x07FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF):
+                        # TODO for forking
+                        # make sure this block makes sense in the context of the rest of the chain
+                        # temp_bank stuff
+                        #prev matches up
+                        #hashes all make sense
                         pass
             except:
                 return False
