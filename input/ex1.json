@@ -2,10 +2,7 @@
 	{
 		"number": "hash of input, output, and signature fields",
 		"input": [
-			{
-				"number": "transaction number",
-				"output": { "value": "value", "pubkey": "sender public key" }
-			}
+			{"number": "transaction number", "output": { "value": "value", "pubkey": "sender public key" }}
 		],
 		"output": [{ "value": "value", "pubkey": "receiver public key" }],
 		"sig": "signature of input and output fields using sender private key"

@@ -65,10 +65,10 @@ where ... implies that there could be an arbitrary number of similar elements in
 
 A block will be structured as:
 
-{"tx": <a single transaction>,
+{"self": <a single transaction>,
  "prev": <hash of the previous block>,
  "nonce": <the nonce value, used for proof-of-work>,
- "pow": <the proof-of-work, a hash of the tx, prev, and nonce fields>
+ "pow": <the proof-of-work, a hash of the self, prev, and nonce fields>
 }
 Hashes should be written as hexadecimal values with no prefix. An example:
 
