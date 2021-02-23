@@ -50,7 +50,7 @@ def generateTransactionList(users):
     f.write("[\n")
     # genesis block/transaction
     genesisBlock = generateTransaction([], [], [users[0]], [], [100], True)
-    print(buildJsonTransaction(genesisBlock), file=f)
+    # print(buildJsonTransaction(genesisBlock), file=f)
 
     # all other transactions
     tx1 = generateTransaction([users[0]], [genesisBlock.number],
@@ -63,7 +63,28 @@ def generateTransactionList(users):
 
     tx3 = generateTransaction([users[2]], [tx2.number],
                               [users[2], users[3]], [30], [20, 10], False)  # Steve is paying Phil 10
-    print(buildJsonTransaction(tx3)[:-1], file=f)
+    print(buildJsonTransaction(tx3), file=f)
+
+    malTx1 = generateTransaction([users[6]], [tx1.number],
+                                 [users[6], users[7]], [10], [5, 5], False)  # BAD TX: Stacy (no coins) paying Candice 5
+    print(buildJsonTransaction(malTx1), file=f)
+
+    tx4 = generateTransaction([users[0]], [tx2.number],
+                              [users[0], users[5]], [40], [25, 15], False)  # Bob is paying John 15
+    print(buildJsonTransaction(tx4), file=f)
+
+    tx5 = generateTransaction([users[1]], [tx1.number],
+                              [users[1], users[4]], [30], [15, 15], False)  # Alice is paying Barbara 15
+    print(buildJsonTransaction(tx5), file=f)
+
+    tx6 = generateTransaction([users[2]], [tx3.number],
+                              [users[2], users[6]], [20], [15, 5], False)  # Steve is paying Stacy 5
+    print(buildJsonTransaction(tx6), file=f)
+
+    malTx2 = generateTransaction([users[6]], ['0'],
+                                 [users[6], users[7]], [10], [5, 5], False)  # BAD TX: Invalid input transaction number
+    print(buildJsonTransaction(malTx2)[:-1], file=f)
+
     f.write("]")
     f.close()
     return genesisBlock
@@ -96,7 +117,10 @@ def generateTransaction(sUsers, sTxs, rUsers, valuesSent, valuesReceived, genesi
     output += '\n        ]'
 
     if genesis:
-        signature = generateSignature(input, output, rUsers[0])
+        # generates an invalid signature, can also be used for testing
+        user = User("Genesis")
+        user.vk = rUsers[0].vk
+        signature = generateSignature(input, output, user)
     else:
         signature = generateSignature(input, output, sUsers[0])
     number = generate_hash([input.encode('utf-8'), output.encode('utf-8'), HexEncoder.decode(signature.signature)])
