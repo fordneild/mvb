@@ -49,28 +49,35 @@ def generateTransactionList(users):
     f = open(abs_file_path, "w")
     f.write("[\n")
     # genesis block/transaction
-    genesisBlock = generateTransaction([], [], users, [1, 1, 1, 1, 1, 1, 1, 1], True)
+    genesisBlock = generateTransaction([], [], users[0], [], [100], True)
+    print(buildJsonTransaction(genesisBlock), file=f)
 
     # all other transactions
-    tx = generateTransaction([users[3]], ["bc9dde8f88cd0680819b112df41b71f5b2d57c4f0462d408b6dfd508040d0538"],
-                             [users[4]], [1], False)  # Phil is paying Barbara 1
-    print(buildJsonTransaction(tx), file=f)
+    tx1 = generateTransaction([users[0]], [genesisBlock.number],
+                              [users[0], users[1]], [100], [70, 30], False)  # Bob is paying Alice 30
+    print(buildJsonTransaction(tx1), file=f)
 
-    tx = generateTransaction([users[4]], ["a578ab2a1b3eadc0d018c02b08df5e2267803548ee57edf927e72270b05e3dd6"],
-                             [users[2]], [1], False)  # Barbara is paying Steve 2
-    print(buildJsonTransaction(tx)[:-1], file=f)
+    tx2 = generateTransaction([users[0]], [tx1.number],
+                              [users[0], users[2]], [70], [40, 30], False)  # Bob is paying Steve 30
+    print(buildJsonTransaction(tx2), file=f)
+
+    tx3 = generateTransaction([users[2]], [tx2.number],
+                              [users[2], users[3]], [30], [20, 10], False)  # Steve is paying Phil 10
+    print(buildJsonTransaction(tx3)[:-1], file=f)
     f.write("]")
     f.close()
     return genesisBlock
 
 
-def generateTransaction(sUsers, sTxs, rUsers, values, genesis):
+def generateTransaction(sUsers, sTxs, rUsers, valuesSent, valuesReceived, genesis):
     # generate input
     input = '[\n'
     index = 0
     for s in sUsers:
-        input += '            {\n                "number": \"' + sTxs[index] + '\",\n                "output": {"value": ' + str(values[
-            index]) + ', "pubkey": \"' + str(s.vk) + '\"}\n            },\n'
+        input += '            {\n                "number": \"' + sTxs[
+            index] + '\",\n                "output": {"value": ' + str(valuesSent[
+                                                                           index]) + ', "pubkey": \"' + str(
+            s.vk) + '\"}\n            },\n'
         index += 1
     if index > 0:
         input = input[: -2]
@@ -82,7 +89,7 @@ def generateTransaction(sUsers, sTxs, rUsers, values, genesis):
     output = '[\n'
     index = 0
     for r in rUsers:
-        output += '            {"value": ' + str(values[index]) + ', "pubkey": \"' + str(r.vk) + '\"},'
+        output += '            {"value": ' + str(valuesReceived[index]) + ', "pubkey": \"' + str(r.vk) + '\"},'
         index += 1
     if index > 0:
         output = output[: -1]
