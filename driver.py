@@ -48,15 +48,15 @@ class HonestNode(threading.Thread):
         for (unverifiedTxNum, unverifiedTx) in list(unverifiedTxs.items()):
             # until we find possible valid Tx that we do not already have in our chain
             if unverifiedTxNum not in self.txInChain and unverifiedTxNum not in self.invalidTx and unverifiedTxNum not in self.unverifiableTx:
-                try:
-                    tx = Transaction(unverifiedTx)
-                    print(unverifiedTxNum + "is valid")
-                except:
+                # try:
+                tx = Transaction(unverifiedTx)
+                print(unverifiedTxNum + "is valid")
+                # except:
                     # this was an invalidTX, mark it as such
-                    self.invalidTx.add(unverifiedTxNum)
-                    print(unverifiedTxNum + "is invalid")
+                    # self.invalidTx.add(unverifiedTxNum)
+                    # print(unverifiedTxNum + "is invalid")
                     # lets see if we got new chains from our neighbors
-                    break
+                    # break
                 try:
                     self.chain.addTx(tx)
                     self.txInChain.add(tx.number)
