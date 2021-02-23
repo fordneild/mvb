@@ -39,7 +39,8 @@ class Transaction:
         elif not self.number:
             raise Exception
 
-        hexHash = generate_hash([self.input, self.output, self.sig])
+        hexHash = generate_hash([self.input.encode('utf-8'), self.output.encode('utf-8'), HexEncoder.decode(self.sig.signature)])
+
         if self.number != hexHash:
             raise Exception
         totalInOut = 0
