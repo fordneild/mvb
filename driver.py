@@ -1,6 +1,7 @@
 import threading
 import hashlib
-import nacl
+from nacl.signing import VerifyKey
+from nacl.encoding import HexEncoder
 import time
 import queue
 import json
@@ -81,15 +82,26 @@ class Transaction:
     def validate(self):
         #
         # if not valid, throw error
+        if len(self.input) == 0:
+            raise Exception
+        elif len(self.output) == 0:
+            raise Exception
+        elif not self.sig:
+            raise Exception
+        elif not self.number:
+            raise Exception
+
         hexHash = generate_hash([self.input, self.output, self.sig])
         if self.number != hexHash:
-            return False
+            raise Exception
         totalInOut = 0
         for val in Transaction.netTx(self):
             totalInOut += val
         if totalInOut != 0:
-            return False
-        vk = VerifyKey(verify_key_hex, encoder=HexEncoder)
+            raise Exception
+
+        vk = VerifyKey(self.input[0][1][1], encoder=HexEncoder)
+        vk.verify(self.sig, encoder=HexEncoder)
 
 
 class Block:
