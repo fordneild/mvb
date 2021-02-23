@@ -49,7 +49,7 @@ def generateTransactionList(users):
     f = open(abs_file_path, "w")
     f.write("[\n")
     # genesis block/transaction
-    genesisBlock = generateTransaction([], [], users[0], [], [100], True)
+    genesisBlock = generateTransaction([], [], [users[0]], [], [100], True)
     print(buildJsonTransaction(genesisBlock), file=f)
 
     # all other transactions
