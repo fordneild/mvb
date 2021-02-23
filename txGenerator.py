@@ -1,7 +1,6 @@
 import hashlib
 from nacl.encoding import HexEncoder
 from nacl.signing import SigningKey
-from nacl.signing import VerifyKey
 import json
 import os
 
@@ -9,8 +8,8 @@ import os
 class User:
     def __init__(self, name):
         self.name = name
-        self.pk = ''
-        self.sk = ''
+        self.sk = SigningKey.generate()
+        self.vk = self.sk.verify_key.encode(encoder=HexEncoder)
 
 
 class Transaction:
@@ -28,15 +27,16 @@ def generate_hash(secrets):
     return dk.hexdigest()
 
 
+# QUESTION: Should this live in the user class? Can we have a users without these fields? Is there a benefit to doing them all at once?
 # generates and saves signing keys (private) and verify (public) keys for all users
 # signatures/keys are all encoded in HexEncoder
-def generateSkVk(users):
-    for u in users:
-        tempSk = SigningKey.generate()
-        # u.sk = tempSk.encode(encoder=HexEncoder)
-        u.sk = tempSk
-        tempPk = tempSk.verify_key
-        u.vk = tempPk.encode(encoder=HexEncoder)
+# def generateSkVk(users):
+#     for u in users:
+#         tempSk = SigningKey.generate()
+#         u.sk = tempSk
+#         # QUESTION: [tempSk.verify_key] vs [from nacl.signing import VerifyKey]?
+#         tempPk = tempSk.verify_key
+#         u.vk = tempPk.encode(encoder=HexEncoder)
 
 
 # generates output file with a list of transactions based on specified transactions including genesis transaction
@@ -49,20 +49,21 @@ def generateTransactionList(users):
     f = open(abs_file_path, "w")
     f.write("[\n")
     # genesis block/transaction
-    tx = generateTransaction([], [], users, [1, 1, 1, 1, 1, 1, 1, 1], True)
-    print(buildJsonTransaction(tx), file=f)
+    genesisBlock = generateTransaction([], [], users, [1, 1, 1, 1, 1, 1, 1, 1], True)
 
     # all other transactions
     tx = generateTransaction([users[3]], ["bc9dde8f88cd0680819b112df41b71f5b2d57c4f0462d408b6dfd508040d0538"],
                              [users[4]], [1], False)  # Phil is paying Barbara 1
     print(buildJsonTransaction(tx), file=f)
 
+
+
     tx = generateTransaction([users[4]], ["a578ab2a1b3eadc0d018c02b08df5e2267803548ee57edf927e72270b05e3dd6"],
                              [users[2]], [1], False)  # Barbara is paying Steve 2
     print(buildJsonTransaction(tx)[:-1], file=f)
     f.write("]")
     f.close()
-    return True
+    return genesisBlock
 
 
 def generateTransaction(sUsers, sTxs, rUsers, values, genesis):
@@ -121,10 +122,10 @@ def main():
         users.append(User(n))
 
     # generate and save public and secret keys for all users
-    generateSkVk(users)
+    # generateSkVk(users)
 
     # generate an output file with a list of legitimate and illegitimate transactions
-    generateTransactionList(users)
+    return generateTransactionList(users)
 
 
 if __name__ == "__main__":
