@@ -9,7 +9,7 @@ class Transaction:
         self.number = tx['number']
         self.output = tx['output']
         self.sig = tx['sig']
-        Transaction.validate(self)
+        self.validate()
 
     def netTx(tx):
         net = {}

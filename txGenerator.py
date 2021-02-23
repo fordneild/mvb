@@ -1,7 +1,6 @@
 import hashlib
 from nacl.encoding import HexEncoder
 from nacl.signing import SigningKey
-import json
 import os
 
 
@@ -22,6 +21,10 @@ class Transaction:
 
 def generate_hash(secrets):
     dk = hashlib.sha256()
+    # ERROR
+    #   File "/Users/fordneild/workdir/blockchain/mvb/txGenerator.py", line 26, in generate_hash
+    #     dk.update(s)
+    # TypeError: object supporting the buffer API required
     for s in secrets:
         dk.update(s)
     return dk.hexdigest()
@@ -40,11 +43,9 @@ def generate_hash(secrets):
 
 
 # generates output file with a list of transactions based on specified transactions including genesis transaction
-def generateTransactionList(users):
+def generateTransactionList(users, outFilename):
     script_dir = os.path.dirname(__file__)  # <-- absolute dir the script is in
-    outFilename = "transactions.json"
-    rel_path = "input/" + outFilename
-    abs_file_path = os.path.join(script_dir, rel_path)
+    abs_file_path = os.path.join(script_dir, outFilename)
 
     f = open(abs_file_path, "w")
     f.write("[\n")
@@ -142,7 +143,7 @@ def buildJsonTransaction(tx):
            "\"\n    },"
 
 
-def main():
+def main(file_name):
     names = ['Bob', 'Alice', 'Steve', 'Phil', 'Barbara', 'John', 'Stacy', 'Candice']
     users = []
 
@@ -154,8 +155,8 @@ def main():
     # generateSkVk(users)
 
     # generate an output file with a list of legitimate and illegitimate transactions
-    return generateTransactionList(users)
+    return generateTransactionList(users, file_name)
 
 
 if __name__ == "__main__":
-    main()
+    main("transactions.json")

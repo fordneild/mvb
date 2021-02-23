@@ -19,9 +19,6 @@ class Chain:
         except:
             return False
 
-    def hasTx(self, txNum):
-        return txNum in self.tx
-
 
     def validateBlock(blocks, newBlock: Block, unspentCoin2BlockIdx):
         assert len(blocks) > 0
