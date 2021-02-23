@@ -3,20 +3,13 @@ import json
 import sys
 import random
 import txGenerator
-from Node import HonestNode
+from Node import HonestNode, MaliciousNode
 
 # these variables are globally accessible to all nodes
 stop_threads = False
 nodes = {}
 # when we detect we are on a fork, add back transactions from shorter block that are also not on the larger block
 unverifiedTxs = {}
-
-# driver takes transactions and number of nodes to process them
-
-# TODO validate other nodes incoming new chain (forking)
-# TODO generate examples
-# TODO signing blocks and verifying signatures in TX
-
 
 def driver(txs, numHonestNodes, numMaliciousNodes, genesisBlock):
     honest_nodes_left_to_finish = startNodes(numHonestNodes, numMaliciousNodes, genesisBlock)
@@ -42,17 +35,18 @@ def driver(txs, numHonestNodes, numMaliciousNodes, genesisBlock):
             if(toRemove):
                 honest_nodes_left_to_finish.remove(toRemove)
     # wait for all nodes to stop
-    for i in range(numNodes):
-        key = idxToKey(i)
-        nodes[key].join()
+    for node in nodes.items():
+        node.join()
     print('all done!')
 
 def idxToKey(idx):
     return 'Node' + str(idx)
 
 def startNodes(numHonest, numMalicious, genesisBlock):
+    honest_node_ids = set()
     for i in range(numHonest):
         key = idxToKey(i)
+        honest_node_ids.add(key)
         # Create node in thread
         global nodes
         nodes[key] = HonestNode(key, genesisBlock)
@@ -66,6 +60,7 @@ def startNodes(numHonest, numMalicious, genesisBlock):
         nodes[key] = MaliciousNode(key, genesisBlock)
         # Start it
         nodes[key].start()
+    return honest_node_ids
 
 
 def setupTxs():

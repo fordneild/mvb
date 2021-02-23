@@ -56,8 +56,6 @@ def generateTransactionList(users):
                              [users[4]], [1], False)  # Phil is paying Barbara 1
     print(buildJsonTransaction(tx), file=f)
 
-
-
     tx = generateTransaction([users[4]], ["a578ab2a1b3eadc0d018c02b08df5e2267803548ee57edf927e72270b05e3dd6"],
                              [users[2]], [1], False)  # Barbara is paying Steve 2
     print(buildJsonTransaction(tx)[:-1], file=f)
