@@ -1,3 +1,11 @@
+Code written by: Joao kawase, jkawase1 and Ford Neild, hneild1
+To run this code simply run the following command in terminal inside the mvb folder: python3 driver.py input/transactions.json
+Outputs of each (honest) nodes processed and approved transactions will be printed to the output folder, along with a Blockchain representative of the nodes.
+driver.py file has options to change the number of honest and malicious nodes present in the simulation. The variables can be found at lines 266 and 267 of driver.py file.
+Currently, the simulation is set for 5 honest nodes and 1 malicious node.
+Below is a copy of the assignment description.
+
+
 This is the assignment discription for the mvb (minimum viable blockchain)
 
 

@@ -264,6 +264,6 @@ if __name__ == "__main__":
     with open(file_name) as json_file:
         txs = json.loads(json_file.read())
     NUM_HONEST_NODES = 5
-    NUM_MALICIOUS_NODES = 0
+    NUM_MALICIOUS_NODES = 1
     driver(txs, NUM_HONEST_NODES,NUM_MALICIOUS_NODES, genesisBlock)
 
