@@ -73,10 +73,13 @@ class Chain:
         except:
             return False
 
-    def asString(self):
+    def asString(self, asTx = False):
         res = "[\n"
         for i, block in enumerate(self.blocks):
-            res+=block.asString()
+            if(asTx):
+                res+=block.asTx()
+            else:
+                res+=block.asBlock()
             res+=',\n'
             
         return res[:-2] + "\n]\n"

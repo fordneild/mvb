@@ -22,5 +22,10 @@ class Block:
     def hash(self):
         return self.pow
     
-    def asString(self):
-        return json.dumps({'tx':{'number':self.tx.number, 'output':self.tx.output, 'input':self.tx.input, 'sig':self.tx.sig}})
+    def asTx(self):
+        return json.dumps({'tx':{'number':self.tx.number, 'output':self.tx.output, 'input':self.tx.input, 'sig':self.tx.sig}, 'prev':self.prev, 'nonce':self.nonce, 'pow':self.pow})
+        # return json.dumps({'tx':{'number':self.tx.number, 'output':self.tx.output, 'input':self.tx.input, 'sig':self.tx.sig}})
+
+    def asBlock(self):
+        return json.dumps({'tx':{'number':self.tx.number, 'output':self.tx.output, 'input':self.tx.input, 'sig':self.tx.sig}, 'prev':self.prev, 'nonce':self.nonce, 'pow':self.pow})
+        # return json.dumps({'tx':{'number':self.tx.number, 'output':self.tx.output, 'input':self.tx.input, 'sig':self.tx.sig}})

@@ -51,7 +51,7 @@ class HonestNode(threading.Thread):
             if unverifiedTxNum not in self.txInChain and unverifiedTxNum not in self.invalidTx and unverifiedTxNum not in self.unverifiableTx:
                 try:
                     tx = Transaction(unverifiedTx)
-                    print(unverifiedTxNum + " is well fomratted")
+                    print(unverifiedTxNum + " is well formatted")
                 except:
                     # this was an invalidTX, mark it as such
                     self.invalidTx.add(unverifiedTxNum)
@@ -80,6 +80,8 @@ class HonestNode(threading.Thread):
                 self.chain = copy.deepcopy(newChain)
                 for block in self.chain.blocks:
                     self.txInChain.add(block.tx.number)
+                return True
+        return False
 
     def broadcastChain(self):
         print(self.name + " broadcasting chain ")
@@ -87,11 +89,16 @@ class HonestNode(threading.Thread):
         for nodeKey, node in nodes.items():
             if nodeKey != self.name:
                 node.sendChain(self.chain)
+    
     def print(self):
         with open('output/'+self.name+".json", 'w') as outfile:
-            outfile.write(self.chain.asString())
+            outfile.write(self.chain.asString(asTx=True))
             outfile.close()
 
+    def printBlockChain(self):
+        with open('output/'+self.name+"'s_chain"+".json", 'w') as outfile:
+            outfile.write(self.chain.asString())
+            outfile.close()
 class MaliciousNode(threading.Thread):
     def __init__(self, name, genesisBlock):
         threading.Thread.__init__(self)
@@ -210,6 +217,9 @@ def driver(txs, numHonestNodes, numMaliciousNodes, genesisBlock):
                 #     print(honest_node_id + " has chain of len" + str(len(honest_node.chain.blocks)))
             if(toRemove):
                 nodes[toRemove].print()
+
+                if(toRemove == "Node0"):
+                    nodes[toRemove].printBlockChain()
                 honest_nodes_left_to_finish.remove(toRemove)
     # wait for all nodes to stop
     for node in nodes.values():
@@ -253,7 +263,7 @@ if __name__ == "__main__":
     genesisBlock = Block(setupTxs(file_name), "")
     with open(file_name) as json_file:
         txs = json.loads(json_file.read())
-    NUM_HONEST_NODES = 2
-    NUM_MALICIOUS_NODES = 1
+    NUM_HONEST_NODES = 5
+    NUM_MALICIOUS_NODES = 0
     driver(txs, NUM_HONEST_NODES,NUM_MALICIOUS_NODES, genesisBlock)
 
