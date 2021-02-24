@@ -3,10 +3,11 @@ from nacl.encoding import HexEncoder
 from txGenerator import generate_hash
 import json
 
+
 class Transaction:
     def __init__(self, tx):
         # TODO validate tx
-        print("creating tx from " + str(tx))
+        # print("creating tx from " + str(tx))
         self.input = tx['input']
         self.number = tx['number']
         self.output = tx['output']
@@ -41,23 +42,22 @@ class Transaction:
         elif not self.number:
             raise Exception
 
-        jsonInput = json.dumps(self.input, indent=4)
-
-        jsonOutput = json.dumps(self.output, indent=4)
+        print(self.input)
+        print(self.output)
+        print(self.sig)
 
         hexHash = generate_hash(
             [json.dumps(self.input).encode('utf-8'), json.dumps(self.output).encode('utf-8'), self.sig.encode('utf-8')]
         )
 
         if self.number != hexHash:
-            # raise Exception
-            pass
+            raise Exception
         totalInOut = 0
         for val in Transaction.netTx(self):
             totalInOut += val
         if totalInOut != 0:
             raise Exception
 
-        vk = VerifyKey(self.input[0][1][1], encoder=HexEncoder)
-        vk.verify(self.sig, encoder=HexEncoder)
-
+        msg = json.dumps(self.output).encode('utf-8')
+        msg += json.dumps(self.input).encode('utf-8')
+        vk = self.input[0]['output']['pubkey'].verify(msg, self.sig, encoder=HexEncoder)

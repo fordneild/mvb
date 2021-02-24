@@ -123,13 +123,13 @@ def generateTransaction(sUsers, sTxs, rUsers, valuesSent, valuesReceived, genesi
         signature = generateSignature(json.dumps(input), json.dumps(output), sUsers[0])
 
     number = generate_hash(
-        [json.dumps(input).encode('utf-8'), json.dumps(output).encode('utf-8'), str(signature).encode('utf-8')]
+        [json.dumps(input).encode('utf-8'), json.dumps(output).encode('utf-8'), str(signature.signature).encode('utf-8')]
     )
     #print(input)
     #print(output)
     #print(str(signature))
 
-    return Transaction(input, number, output, str(signature))
+    return Transaction(input, number, output, signature.signature)
 
 
 def generateSignature(input, output, user):
