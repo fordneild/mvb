@@ -22,9 +22,7 @@ class Transaction:
             if senderPk not in net:
                 net[senderPk] = 0
             net[senderPk] -= sendAmount
-        print("OUTPUT",str(self.output), type(self.output))
         for o in self.output:
-            print("OUTPUT: O",str(o), type(o))
             receiverPk = o['pubkey']
             receiveAmount = o['value']
             if receiverPk not in net:
@@ -55,11 +53,12 @@ class Transaction:
             # raise Exception
             pass
         totalInOut = 0
-        for val in self.netTx():
+        res = self.netTx()
+        print('DEBUG',res,type(res))
+        for val in res.values():
             totalInOut += val
         if totalInOut != 0:
             raise Exception
-
-        vk = VerifyKey(self.input[0][1][1], encoder=HexEncoder)
+        vk = VerifyKey(self.input[0]['output']['pubkey'], encoder=HexEncoder)
         vk.verify(self.sig, encoder=HexEncoder)
 
