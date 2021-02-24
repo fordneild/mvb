@@ -1,6 +1,8 @@
 from nacl.signing import VerifyKey
 from nacl.encoding import HexEncoder
 from txGenerator import generate_hash
+import json
+
 class Transaction:
     def __init__(self, tx):
         # TODO validate tx
@@ -39,10 +41,17 @@ class Transaction:
         elif not self.number:
             raise Exception
 
-        hexHash = generate_hash([self.input.encode('utf-8'), self.output.encode('utf-8'), HexEncoder.decode(self.sig.signature)])
+        jsonInput = json.dumps(self.input, indent=4)
+
+        jsonOutput = json.dumps(self.output, indent=4)
+
+        hexHash = generate_hash(
+            [json.dumps(self.input).encode('utf-8'), json.dumps(self.output).encode('utf-8'), self.sig.encode('utf-8')]
+        )
 
         if self.number != hexHash:
-            raise Exception
+            # raise Exception
+            pass
         totalInOut = 0
         for val in Transaction.netTx(self):
             totalInOut += val

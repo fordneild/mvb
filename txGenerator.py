@@ -2,6 +2,7 @@ import hashlib
 from nacl.encoding import HexEncoder
 from nacl.signing import SigningKey
 import os
+import json
 
 
 class User:
@@ -19,6 +20,7 @@ class Transaction:
         self.sig = sig
 
 
+# TODO fix
 def generate_hash(secrets):
     dk = hashlib.sha256()
     # ERROR
@@ -93,39 +95,37 @@ def generateTransactionList(users, outFilename):
 
 def generateTransaction(sUsers, sTxs, rUsers, valuesSent, valuesReceived, genesis):
     # generate input
-    input = '[\n'
+    input = []
     index = 0
     for s in sUsers:
-        input += '            {\n                "number": \"' + sTxs[
-            index] + '\",\n                "output": {"value": ' + str(valuesSent[
-                                                                           index]) + ', "pubkey": \"' + str(
-            s.vk) + '\"}\n            },\n'
+        json_temp = '{"number": "' + sTxs[index] + '", "output": {"value": ' + str(
+            valuesSent[index]) + ', "pubkey": "' + str(s.vk) + '"}}'
         index += 1
-    if index > 0:
-        input = input[: -2]
-    input += '\n        ]'
-    if genesis:
-        input = '[]'
+        # print(json_temp)
+        input.append(json.loads(json_temp))
 
+    # print(json.dumps(input))
     # generate output
-    output = '[\n'
+    output = []
     index = 0
     for r in rUsers:
-        output += '            {"value": ' + str(valuesReceived[index]) + ', "pubkey": \"' + str(r.vk) + '\"},'
+        json_temp = '{"value": ' + str(valuesReceived[index]) + ', "pubkey": "' + str(r.vk) + '"}'
         index += 1
-    if index > 0:
-        output = output[: -1]
-    output += '\n        ]'
+        output.append(json.loads(json_temp))
 
+    # print(json.dumps(output))
     if genesis:
         # generates an invalid signature, can also be used for testing
         user = User("Genesis")
         user.vk = rUsers[0].vk
-        signature = generateSignature(input, output, user)
+        signature = generateSignature(json.dumps(input), json.dumps(output), user)
     else:
-        signature = generateSignature(input, output, sUsers[0])
-    number = generate_hash([input.encode('utf-8'), output.encode('utf-8'), HexEncoder.decode(signature.signature)])
-    return Transaction(input, number, output, signature)
+        signature = generateSignature(json.dumps(input), json.dumps(output), sUsers[0])
+
+    number = generate_hash(
+        [json.dumps(input).encode('utf-8'), json.dumps(output).encode('utf-8'), str(signature).encode('utf-8')])
+
+    return Transaction(input, number, output, str(signature))
 
 
 def generateSignature(input, output, user):
@@ -136,11 +136,13 @@ def generateSignature(input, output, user):
 
 
 def buildJsonTransaction(tx):
-    return "    {\n        \"number\": \"" + str(tx.number) + \
-           "\",\n        \"input\": " + tx.input + \
-           ",\n        \"output\": " + tx.output + \
-           ",\n        \"sig\": \"" + str(tx.sig) + \
-           "\"\n    },"
+    #print(str(tx.number))
+    #print(str(tx.input)[1:-1])
+    #print(str(tx.output)[1:-1])
+    #print(str(tx.sig))
+    fullTx = '{"number":"' + str(tx.number) + '", "input": [' + str(json.dumps(tx.input)[1:-1]) + '], "output": [' + str(json.dumps(tx.input)[1:-1]) + '], "sig": "' + str(tx.sig) \
+             + '"},'
+    return fullTx
 
 
 def main(file_name):
@@ -159,4 +161,4 @@ def main(file_name):
 
 
 if __name__ == "__main__":
-    main("transactions.json")
+    main("input/transactions.json")
