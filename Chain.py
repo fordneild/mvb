@@ -9,15 +9,12 @@ class Chain:
         self.unspentCoin2BlockIdx = {}
 
     def addTx(self, rawTx):
-        try:
-            tx = Transaction(rawTx)
-            lastBlockHash = self.blocks[len(self.blocks) - 1].hash()
-            newBlock = Block(tx, lastBlockHash)
-            self.unspentCoin2BlockIdx = Chain.validateBlock(self.blocks, newBlock, self.unspentCoin2BlockIdx)
-            self.blocks.append(newBlock)
-            return True
-        except:
-            return False
+        tx = Transaction(rawTx)
+        lastBlockHash = self.blocks[len(self.blocks) - 1].hash()
+        newBlock = Block(tx, lastBlockHash)
+        self.unspentCoin2BlockIdx = Chain.validateBlock(self.blocks, newBlock, self.unspentCoin2BlockIdx)
+        self.blocks.append(newBlock)
+        return True
 
 
     def validateBlock(blocks, newBlock: Block, unspentCoin2BlockIdx):

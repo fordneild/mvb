@@ -121,15 +121,15 @@ def generateTransaction(sUsers, sTxs, rUsers, valuesSent, valuesReceived, genesi
         signature = generateSignature(json.dumps(input), json.dumps(output), user)
     else:
         signature = generateSignature(json.dumps(input), json.dumps(output), sUsers[0])
-
+    concatSig = signature.signature+signature.message
     number = generate_hash(
-        [json.dumps(input).encode('utf-8'), json.dumps(output).encode('utf-8'), signature.signature]
+        [json.dumps(input).encode('utf-8'), json.dumps(output).encode('utf-8'), concatSig]
     )
 
     #print(output)
     #print(str(signature))
 
-    return Transaction(input, number, output, signature.signature.decode('utf-8'))
+    return Transaction(input, number, output, concatSig.decode('utf-8'))
 
 
 def generateSignature(input, output, user):

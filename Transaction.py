@@ -41,31 +41,16 @@ class Transaction:
             raise Exception
         elif not self.number:
             raise Exception
-
-        #print(self.input)
-        #print(self.output)
-        #print(self.sig)
-        print(self.sig.encode('utf-8'))
-
         hexHash = generate_hash(
             [json.dumps(self.input).encode('utf-8'), json.dumps(self.output).encode('utf-8'), self.sig.encode('utf-8')]
         )
-
-        print(hexHash)
         if self.number != hexHash:
             raise Exception
         totalInOut = 0
         res = self.netTx()
-        print('DEBUG',res,type(res))
         for val in res.values():
             totalInOut += val
         if totalInOut != 0:
             raise Exception
-
-        msg = json.dumps(self.output).encode('utf-8')
-        msg += json.dumps(self.input).encode('utf-8')
-
-        signature_bytes = HexEncoder.decode(self.sig)
-
         vk = VerifyKey(self.input[0]['output']['pubkey'], encoder=HexEncoder)
-        vk.verify(msg, signature_bytes, encoder=HexEncoder)
+        vk.verify(self.sig, encoder=HexEncoder)
