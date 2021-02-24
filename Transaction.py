@@ -14,16 +14,16 @@ class Transaction:
         self.sig = tx['sig']
         self.validate()
 
-    def netTx(tx):
+    def netTx(self):
         net = {}
-        for i in tx.input:
+        for i in self.input:
             output = i['output']
             senderPk = output['pubkey']
             sendAmount = output['value']
             if senderPk not in net:
                 net[senderPk] = 0
             net[senderPk] -= sendAmount
-        for o in tx.output:
+        for o in self.output:
             receiverPk = o['pubkey']
             receiveAmount = o['value']
             if receiverPk not in net:
@@ -53,7 +53,9 @@ class Transaction:
         if self.number != hexHash:
             raise Exception
         totalInOut = 0
-        for val in Transaction.netTx(self):
+        res = self.netTx()
+        print('DEBUG',res,type(res))
+        for val in res.values():
             totalInOut += val
         if totalInOut != 0:
             raise Exception
