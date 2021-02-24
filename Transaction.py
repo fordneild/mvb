@@ -1,6 +1,6 @@
 from nacl.signing import VerifyKey
 from nacl.encoding import HexEncoder
-from txGenerator import generate_hash
+from txGenerator import generate_hash, generateSignature
 import json
 
 
@@ -60,4 +60,6 @@ class Transaction:
 
         msg = json.dumps(self.output).encode('utf-8')
         msg += json.dumps(self.input).encode('utf-8')
-        vk = self.input[0]['output']['pubkey'].verify(msg, self.sig, encoder=HexEncoder)
+        signature = generateSignature(json.dumps(self.input), json.dumps(self.output), )
+        vk = VerifyKey(self.input[0]['output']['pubkey'], encoder=HexEncoder)
+        vk.verify(msg, self.sig, encoder=HexEncoder)
