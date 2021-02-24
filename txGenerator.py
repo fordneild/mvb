@@ -144,7 +144,7 @@ def buildJsonTransaction(tx):
     #print(str(tx.input)[1:-1])
     #print(str(tx.output)[1:-1])
     #print(str(tx.sig))
-    fullTx = '{"number":"' + str(tx.number) + '", "input": [' + str(json.dumps(tx.input)[1:-1]) + '], "output": [' + str(json.dumps(tx.input)[1:-1]) + '], "sig": "' + str(tx.sig) \
+    fullTx = '{"number":"' + str(tx.number) + '", "input": [' + str(json.dumps(tx.input)[1:-1]) + '], "output": [' + str(json.dumps(tx.output)[1:-1]) + '], "sig": "' + str(tx.sig) \
              + '"},'
     return fullTx
 
