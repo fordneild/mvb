@@ -1,3 +1,4 @@
+from Block import Block
 import threading
 import time
 import json
@@ -50,17 +51,17 @@ class HonestNode(threading.Thread):
             if unverifiedTxNum not in self.txInChain and unverifiedTxNum not in self.invalidTx and unverifiedTxNum not in self.unverifiableTx:
                 try:
                     tx = Transaction(unverifiedTx)
-                    print(unverifiedTxNum + "is valid")
+                    print(unverifiedTxNum + " is well fomratted")
                 except:
                     # this was an invalidTX, mark it as such
                     self.invalidTx.add(unverifiedTxNum)
-                    print(unverifiedTxNum + "is invalid")
+                    print(unverifiedTxNum + " is not well formatted")
                     # lets see if we got new chains from our neighbors
                     break
                 try:
                     self.chain.addTx(tx)
                     self.txInChain.add(tx.number)
-                    self.unverifiableTx = {}
+                    self.unverifiableTx = set()
                     self.broadcastChain()
                 except:
                     print(unverifiedTxNum + "is unverifable")
@@ -86,6 +87,10 @@ class HonestNode(threading.Thread):
         for nodeKey, node in nodes.items():
             if nodeKey != self.name:
                 node.sendChain(self.chain)
+    def print(self):
+        with open('output/'+self.name+".json", 'w') as outfile:
+            outfile.write(self.chain.asString())
+            outfile.close()
 
 class MaliciousNode(threading.Thread):
     def __init__(self, name, genesisBlock):
@@ -99,14 +104,17 @@ class MaliciousNode(threading.Thread):
 
     def run(self):
         # target function of the thread class
+        global stop_threads
         try:
             print(self.name + " running...")
             while True:
                 # process all new chains in queue
+                time.sleep(1)
                 while not self.q.empty():
+                    if stop_threads:
+                        break
                     self.receiveChain()
                 # process any new unverified transactions
-                global stop_threads
                 if stop_threads:
                     break
         finally:
@@ -172,6 +180,7 @@ class MissingPowBlock():
 stop_threads = False
 nodes = {}
 unverifiedTxs = {}
+STOP_LENGTH_CHAIN = 7
 
 def driver(txs, numHonestNodes, numMaliciousNodes, genesisBlock):
     honest_nodes_left_to_finish = startNodes(numHonestNodes, numMaliciousNodes, genesisBlock)
@@ -180,7 +189,6 @@ def driver(txs, numHonestNodes, numMaliciousNodes, genesisBlock):
         randomSleepTime = random.uniform(0, 1)
         time.sleep(randomSleepTime)
         unverifiedTxs[tx['number']] = tx
-    STOP_LENGTH_CHAIN = 4
     while True:
         if(len(honest_nodes_left_to_finish) == 0 ):
             # put in an order to stop all Nodes
@@ -190,18 +198,21 @@ def driver(txs, numHonestNodes, numMaliciousNodes, genesisBlock):
             break
         else:
             toRemove = False
+            print(honest_nodes_left_to_finish)
             for honest_node_id in honest_nodes_left_to_finish:
                 honest_node = nodes[honest_node_id]
                 # print("honest node has length " + str(len(honest_node.chain.blocks)))
+                global STOP_LENGTH_CHAIN
                 if(len(honest_node.chain.blocks) >= STOP_LENGTH_CHAIN):
                     toRemove = honest_node_id
                     break
                 # else:
                 #     print(honest_node_id + " has chain of len" + str(len(honest_node.chain.blocks)))
             if(toRemove):
+                nodes[toRemove].print()
                 honest_nodes_left_to_finish.remove(toRemove)
     # wait for all nodes to stop
-    for node in nodes.items():
+    for node in nodes.values():
         node.join()
     print('all done!')
 
@@ -220,7 +231,7 @@ def startNodes(numHonest, numMalicious, genesisBlock):
         nodes[key].start()
     
     for i in range(numMalicious):
-        key = idxToKey(i)
+        key = idxToKey(numHonest+i)
         # Create node in thread
         nodes[key] = MaliciousNode(key, genesisBlock)
         # Start it
@@ -239,10 +250,10 @@ if __name__ == "__main__":
         exit(0)
     # get data
     file_name = sys.argv[1]
-    genesisBlock = setupTxs(file_name)
+    genesisBlock = Block(setupTxs(file_name), "")
     with open(file_name) as json_file:
         txs = json.loads(json_file.read())
-    NUM_HONEST_NODES = 1
-    NUM_MALICIOUS_NODES = 0
+    NUM_HONEST_NODES = 2
+    NUM_MALICIOUS_NODES = 5
     driver(txs, NUM_HONEST_NODES,NUM_MALICIOUS_NODES, genesisBlock)
 
