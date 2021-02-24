@@ -21,10 +21,10 @@ class Chain:
         assert len(blocks) > 0
         newUnspentCoin2BlockIdx = copy.deepcopy(unspentCoin2BlockIdx)
         newTx = newBlock.tx
-        senderPk  = newTx.input[0].output.pubkey
+        senderPk = newTx.input[0].output.pubkey
         for nextTxInput in newTx.input:
-            newTxInputNum  = nextTxInput.number
-            key = generate_hash([newTxInputNum,senderPk])
+            newTxInputNum = nextTxInput.number
+            key = generate_hash([newTxInputNum, senderPk])
             # i am claiming to use this coin
             if(key not in unspentCoin2BlockIdx):
                 raise Exception("Either a double spend or new block is spending money that was never made")
@@ -43,7 +43,7 @@ class Chain:
         # and we add back all the coins in this tx output
         for output in newBlock.tx.output:
             recieverKey= output.pubkey
-            newKey = generate_hash([newTx.number,recieverKey])
+            newKey = generate_hash([newTx.number, recieverKey])
             newUnspentCoin2BlockIdx[newKey] = len(blocks)
         return newUnspentCoin2BlockIdx
 

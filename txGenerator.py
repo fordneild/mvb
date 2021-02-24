@@ -86,7 +86,51 @@ def generateTransactionList(users, outFilename):
 
     malTx2 = generateTransaction([users[6]], ['0'],
                                  [users[6], users[7]], [10], [5, 5], False)  # BAD TX: Invalid input transaction number
-    print(buildJsonTransaction(malTx2)[:-1], file=f)
+    print(buildJsonTransaction(malTx2), file=f)
+
+    tx7 = generateTransaction([users[0]], [tx4.number],
+                              [users[0], users[7]], [25], [15, 10], False)  # Bob paying Candice 10
+    print(buildJsonTransaction(tx7), file=f)
+
+    tx8 = generateTransaction([users[2]], [tx3.number],
+                              [users[2], users[0]], [15], [10, 5], False)  # Steve is paying Bob 5
+    print(buildJsonTransaction(tx8), file=f)
+
+    tx9 = generateTransaction([users[5]], [tx4.number],
+                              [users[5], users[6]], [15], [10, 5], False)  # John is paying Stacy 5
+    print(buildJsonTransaction(tx9), file=f)
+
+    malTx3 = generateTransaction([users[6]], [tx9.number],
+                                 [users[6], users[7]], [10], [6, 5], False)  # BAD TX: Inputs outputs dont add up
+    print(buildJsonTransaction(malTx3), file=f)
+
+    tx10 = generateTransaction([users[4]], [tx5.number],
+                               [users[4], users[3]], [15], [10, 5], False)  # Barbara is paying Phil 5
+    print(buildJsonTransaction(tx10), file=f)
+
+    tx11 = generateTransaction([users[6]], [tx6.number, tx9.number],
+                               [users[4]], [10], [10], False)  # Stacy is paying Barbara 10
+    print(buildJsonTransaction(tx11), file=f)
+
+    tx12 = generateTransaction([users[7]], [tx7.number],
+                               [users[5]], [10], [10], False)  # Candice is paying John 10
+    print(buildJsonTransaction(tx12), file=f)
+
+    malTx4 = generateTransaction([users[7]], [tx7.number],
+                                 [users[6]], [10], [10], False)  # BAD TX: Candice trying to double spend
+    print(buildJsonTransaction(malTx4), file=f)
+
+    tx13 = generateTransaction([users[5]], [tx9.number, tx12.number],
+                               [users[2]], [20], [20], False)  # John is paying Steve 20
+    print(buildJsonTransaction(tx13), file=f)
+
+    tx14 = generateTransaction([users[4]], [tx10.number, tx11.number],
+                               [users[1]], [20], [20], False)  # Barbara is paying Alice 20
+    print(buildJsonTransaction(tx14), file=f)
+
+    tx15 = generateTransaction([users[2]], [tx8.number, tx13.number],
+                               [users[2], users[0]], [30], [15, 15], False)  # Steve is paying Bob 15
+    print(buildJsonTransaction(tx15)[:-1], file=f)
 
     f.write("]")
     f.close()
@@ -121,13 +165,13 @@ def generateTransaction(sUsers, sTxs, rUsers, valuesSent, valuesReceived, genesi
         signature = generateSignature(json.dumps(input), json.dumps(output), user)
     else:
         signature = generateSignature(json.dumps(input), json.dumps(output), sUsers[0])
-    concatSig = signature.signature+signature.message
+    concatSig = signature.signature + signature.message
     number = generate_hash(
         [json.dumps(input).encode('utf-8'), json.dumps(output).encode('utf-8'), concatSig]
     )
 
-    #print(output)
-    #print(str(signature))
+    # print(output)
+    # print(str(signature))
 
     return Transaction(input, number, output, concatSig.decode('utf-8'))
 
@@ -140,11 +184,12 @@ def generateSignature(input, output, user):
 
 
 def buildJsonTransaction(tx):
-    #print(str(tx.number))
-    #print(str(tx.input)[1:-1])
-    #print(str(tx.output)[1:-1])
-    #print(str(tx.sig))
-    fullTx = '{"number":"' + str(tx.number) + '", "input": [' + str(json.dumps(tx.input)[1:-1]) + '], "output": [' + str(json.dumps(tx.output)[1:-1]) + '], "sig": "' + str(tx.sig) \
+    # print(str(tx.number))
+    # print(str(tx.input)[1:-1])
+    # print(str(tx.output)[1:-1])
+    # print(str(tx.sig))
+    fullTx = '{"number":"' + str(tx.number) + '", "input": [' + str(
+        json.dumps(tx.input)[1:-1]) + '], "output": [' + str(json.dumps(tx.output)[1:-1]) + '], "sig": "' + str(tx.sig) \
              + '"},'
     return fullTx
 

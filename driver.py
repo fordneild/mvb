@@ -63,7 +63,7 @@ class HonestNode(threading.Thread):
                     self.unverifiableTx = {}
                     self.broadcastChain()
                 except:
-                    print(unverifiedTxNum + "is unverifable")
+                    print(unverifiedTxNum + "is unverifiable")
                     self.unverifiableTx.add(unverifiedTxNum)
                     break
 

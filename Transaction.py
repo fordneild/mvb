@@ -6,7 +6,6 @@ import json
 
 class Transaction:
     def __init__(self, tx):
-        # TODO validate tx
         # print("creating tx from " + str(tx))
         self.input = tx['input']
         self.number = tx['number']
