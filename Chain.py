@@ -37,10 +37,10 @@ class Chain:
             claimedTxOuputs = claimedBlock.tx.output
             foundOutput = False
             for output in claimedTxOuputs:
-                if(output['pubkey'] == newTx.input[0]['pubkey'] and output['value'] == newTx.input[0]['value']):
+                if(output['pubkey'] == nextTxInput['pubkey'] and output['value'] == nextTxInput['value']):
                     foundOutput = True
             if(not foundOutput):
-                raise Exception("user " + newTx.input[0]['pubkey'] + " does not have money they are claiming")
+                raise Exception("user " + nextTxInput['pubkey'] + " does not have money they are claiming")
             # remove the spend coin from this tx
             del newUnspentCoin2BlockIdx[key]
         # and we add back all the coins in this tx output
