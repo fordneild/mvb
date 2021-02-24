@@ -85,7 +85,7 @@ def generateTransactionList(users, outFilename):
     print(buildJsonTransaction(tx6), file=f)
 
     malTx2 = generateTransaction([users[6]], ['0'],
-                                 [users[6], users[7]], [10], [5, 5], False)  # BAD TX: Invalid input transaction number
+                                   [users[6], users[7]], [10], [5, 5], False)  # BAD TX: Invalid input transaction number
     print(buildJsonTransaction(malTx2), file=f)
 
     tx7 = generateTransaction([users[0]], [tx4.number],
@@ -109,7 +109,7 @@ def generateTransactionList(users, outFilename):
     print(buildJsonTransaction(tx10), file=f)
 
     tx11 = generateTransaction([users[6]], [tx6.number, tx9.number],
-                               [users[4]], [10], [10], False)  # Stacy is paying Barbara 10
+                               [users[4]], [5, 5], [10], False)  # Stacy is paying Barbara 10
     print(buildJsonTransaction(tx11), file=f)
 
     tx12 = generateTransaction([users[7]], [tx7.number],
@@ -121,15 +121,15 @@ def generateTransactionList(users, outFilename):
     print(buildJsonTransaction(malTx4), file=f)
 
     tx13 = generateTransaction([users[5]], [tx9.number, tx12.number],
-                               [users[2]], [20], [20], False)  # John is paying Steve 20
+                               [users[2]], [10, 10], [20], False)  # John is paying Steve 20
     print(buildJsonTransaction(tx13), file=f)
 
     tx14 = generateTransaction([users[4]], [tx10.number, tx11.number],
-                               [users[1]], [20], [20], False)  # Barbara is paying Alice 20
+                               [users[1]], [10, 10], [20], False)  # Barbara is paying Alice 20
     print(buildJsonTransaction(tx14), file=f)
 
     tx15 = generateTransaction([users[2]], [tx8.number, tx13.number],
-                               [users[2], users[0]], [30], [15, 15], False)  # Steve is paying Bob 15
+                               [users[2], users[0]], [10, 20], [15, 15], False)  # Steve is paying Bob 15
     print(buildJsonTransaction(tx15)[:-1], file=f)
 
     f.write("]")
@@ -141,9 +141,9 @@ def generateTransaction(sUsers, sTxs, rUsers, valuesSent, valuesReceived, genesi
     # generate input
     input = []
     index = 0
-    for s in sUsers:
-        json_temp = '{"number": "' + sTxs[index] + '", "output": {"value": ' + str(
-            valuesSent[index]) + ', "pubkey": "' + str(s.vk) + '"}}'
+    for s in sTxs:
+        json_temp = '{"number": "' + s + '", "output": {"value": ' + str(
+            valuesSent[index]) + ', "pubkey": "' + str(sUsers[0].vk) + '"}}'
         index += 1
         # print(json_temp)
         input.append(json.loads(json_temp))

@@ -73,7 +73,7 @@ class HonestNode(threading.Thread):
 
     def receiveChain(self):
         newChain = self.q.get()
-        if len(newChain.blocks) > len(self.chain.blocks):
+        if len(newChain.blocks) >= len(self.chain.blocks):
             if Chain.validateChain(newChain, self.chain.blocks[0]):
                 self.unverifiableTx = {}
                 self.txInChain = {}
@@ -180,7 +180,7 @@ class MissingPowBlock():
 stop_threads = False
 nodes = {}
 unverifiedTxs = {}
-STOP_LENGTH_CHAIN = 15
+STOP_LENGTH_CHAIN = 16
 
 def driver(txs, numHonestNodes, numMaliciousNodes, genesisBlock):
     honest_nodes_left_to_finish = startNodes(numHonestNodes, numMaliciousNodes, genesisBlock)
@@ -254,6 +254,6 @@ if __name__ == "__main__":
     with open(file_name) as json_file:
         txs = json.loads(json_file.read())
     NUM_HONEST_NODES = 2
-    NUM_MALICIOUS_NODES = 0
+    NUM_MALICIOUS_NODES = 1
     driver(txs, NUM_HONEST_NODES,NUM_MALICIOUS_NODES, genesisBlock)
 
