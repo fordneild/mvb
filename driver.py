@@ -171,7 +171,6 @@ class MissingPowBlock():
 # these variables are globally accessible to all nodes
 stop_threads = False
 nodes = {}
-# when we detect we are on a fork, add back transactions from shorter block that are also not on the larger block
 unverifiedTxs = {}
 
 def driver(txs, numHonestNodes, numMaliciousNodes, genesisBlock):

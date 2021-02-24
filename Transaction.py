@@ -13,16 +13,18 @@ class Transaction:
         self.sig = tx['sig']
         self.validate()
 
-    def netTx(tx):
+    def netTx(self):
         net = {}
-        for i in tx.input:
+        for i in self.input:
             output = i['output']
             senderPk = output['pubkey']
             sendAmount = output['value']
             if senderPk not in net:
                 net[senderPk] = 0
             net[senderPk] -= sendAmount
-        for o in tx.output:
+        print("OUTPUT",str(self.output), type(self.output))
+        for o in self.output:
+            print("OUTPUT: O",str(o), type(o))
             receiverPk = o['pubkey']
             receiveAmount = o['value']
             if receiverPk not in net:
@@ -53,7 +55,7 @@ class Transaction:
             # raise Exception
             pass
         totalInOut = 0
-        for val in Transaction.netTx(self):
+        for val in self.netTx():
             totalInOut += val
         if totalInOut != 0:
             raise Exception
