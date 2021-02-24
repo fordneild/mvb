@@ -92,7 +92,7 @@ def generateTransactionList(users, outFilename):
                               [users[0], users[7]], [25], [15, 10], False)  # Bob paying Candice 10
     print(buildJsonTransaction(tx7), file=f)
 
-    tx8 = generateTransaction([users[2]], [tx3.number],
+    tx8 = generateTransaction([users[2]], [tx6.number],
                               [users[2], users[0]], [15], [10, 5], False)  # Steve is paying Bob 5
     print(buildJsonTransaction(tx8), file=f)
 
