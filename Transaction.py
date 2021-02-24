@@ -42,14 +42,16 @@ class Transaction:
         elif not self.number:
             raise Exception
 
-        print(self.input)
-        print(self.output)
-        print(self.sig)
+        #print(self.input)
+        #print(self.output)
+        #print(self.sig)
+        print(self.sig.encode('utf-8'))
 
         hexHash = generate_hash(
             [json.dumps(self.input).encode('utf-8'), json.dumps(self.output).encode('utf-8'), self.sig.encode('utf-8')]
         )
 
+        print(hexHash)
         if self.number != hexHash:
             raise Exception
         totalInOut = 0
@@ -62,6 +64,8 @@ class Transaction:
 
         msg = json.dumps(self.output).encode('utf-8')
         msg += json.dumps(self.input).encode('utf-8')
-        signature = generateSignature(json.dumps(self.input), json.dumps(self.output), )
+
+        signature_bytes = HexEncoder.decode(self.sig)
+
         vk = VerifyKey(self.input[0]['output']['pubkey'], encoder=HexEncoder)
-        vk.verify(msg, self.sig, encoder=HexEncoder)
+        vk.verify(msg, signature_bytes, encoder=HexEncoder)

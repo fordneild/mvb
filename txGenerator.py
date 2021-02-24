@@ -9,7 +9,7 @@ class User:
     def __init__(self, name):
         self.name = name
         self.sk = SigningKey.generate()
-        self.vk = self.sk.verify_key.encode(encoder=HexEncoder)
+        self.vk = self.sk.verify_key.encode(encoder=HexEncoder).decode('utf-8')
 
 
 class Transaction:
@@ -123,13 +123,13 @@ def generateTransaction(sUsers, sTxs, rUsers, valuesSent, valuesReceived, genesi
         signature = generateSignature(json.dumps(input), json.dumps(output), sUsers[0])
 
     number = generate_hash(
-        [json.dumps(input).encode('utf-8'), json.dumps(output).encode('utf-8'), str(signature.signature).encode('utf-8')]
+        [json.dumps(input).encode('utf-8'), json.dumps(output).encode('utf-8'), signature.signature]
     )
-    #print(input)
+
     #print(output)
     #print(str(signature))
 
-    return Transaction(input, number, output, signature.signature)
+    return Transaction(input, number, output, signature.signature.decode('utf-8'))
 
 
 def generateSignature(input, output, user):
